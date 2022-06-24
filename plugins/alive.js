@@ -33,7 +33,7 @@ Module({
   var buttons = [{
     urlButton: {
         displayText: 'Github',
-        url: 'https://github.com/souravkl11/raganork'
+        url: 'https://github.com/10Chanuka'
     }
 }, {
   urlButton: {
