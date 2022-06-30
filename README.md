@@ -22,6 +22,7 @@ Visit [Heroku status site](https://status.heroku.com) for more details
   
   [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/rXagj8?referralCode=AkkiFj)
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/rXagj8?referralCode=AkkiFj)
 ## _[How to use? Documentation](https://github.com/souravkl11/raganork-md/wiki/Raganork-Documentation)_
 
 ## You can also use as a BGM bot. [Click here](https://github.com/souravkl11/raganork-md/wiki/Docs#how-to-set-up-bgm-bot)
