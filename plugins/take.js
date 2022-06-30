@@ -18,7 +18,8 @@ let {
     STICKER_DATA,
     MODE,
     HEROKU,
-    AUDIO_DATA
+    AUDIO_DATA,
+    BOT_INFO
 } = require('../config');
 let {
     addInfo,
@@ -37,8 +38,8 @@ let ur = '/apps/' + HEROKU.APP_NAME;
 Module({
     pattern: 'take ?(.*)',
     fromMe: a,
-    desc: 'Changes sticker/audio pack & author name. Title, artist, thumbnail etc.',
-    use: 'edit'
+    use: 'edit',
+    desc: 'Changes sticker/audio pack & author name. Title, artist, thumbnail etc.'
 }, (async (m, match) => {
     if (!m.reply_message.data.quotedMessage) return await m.sendMessage('_Reply to an audio or a sticker_')
     var audiomsg = m.reply_message.audio;
@@ -62,18 +63,18 @@ Module({
                 ios: "https://github.com/souravkl11/Raganork-md/"
             }
         }
-        return await m.sendReply(fs.readFileSync(await addExif(q,exif)),'sticker')
+        return await m.client.sendMessage(m.jid,{sticker: fs.readFileSync(await addExif(q,exif))},{quoted:m.quoted})
     }
     if (!stickermsg && audiomsg) {
                 let inf = match[1] !== '' ? match[1] : AUDIO_DATA
                 var spl = inf.split(';')
-                var image = spl[2]?await skbuffer(spl[2]):''
-                var res = await addInfo(q,spl[0],spl[1], 'Raganork Engine', image)
+                var image = spl[2]?await skbuffer(spl[2]): BOT_INFO.split(";")[3]
+                var res = await addInfo(q,spl[0],spl[1]?spl[1]:AUDIO_DATA.split(";")[1], 'Raganork Engine', image)
                 await m.client.sendMessage(m.jid, {
                     audio: res,
                     mimetype: 'audio/mp4',
                 }, {
-                    quoted: m.data,
+                    quoted: m.quoted,
                     ptt: false
                 });
     }
@@ -83,33 +84,6 @@ Module({
         quoted: m.data
     })
 }));
-/*addCommand({pattern: 'wm ?(.*)', fromMe: a, desc:'Sets sticker pack & author name with given ones.'}, (async (m, t) => { 
-var q = await m.client.downloadAndSaveMediaMessage({key: {remoteJid: m.reply_message.jid,id: m.reply_message.id},message: m.reply_message.data.quotedMessage});
-var au,p;
-if (t[1].includes('|')) {
-var s = t[1].split('|');
-au = s[1];
-p = s[0];}
-else {p = t[1]}
-var res = await sticker(q,au,p,w.take_key,v)
-await m.client.sendMessage(m.jid, await skbuffer(res),MessageType.sticker,{quoted:m.data});}));
-addCommand({pattern: 'crop ?(.*)', fromMe: a, desc:'Crops sticker'}, (async (m, t) => { 
-var q = await m.client.downloadAndSaveMediaMessage({key: {remoteJid: m.reply_message.jid,id: m.reply_message.id},message: m.reply_message.data.quotedMessage});
-var au,p;
-var s = w.SOURAVKL11.split('|');
-var au = s[1];
-var p = s[0];
-var res = await stickercrop(q,au,p,v)
-await m.client.sendMessage(m.jid, await skbuffer(res),MessageType.sticker,{quoted:m.data});}));
-addCommand({ pattern: 'setexif ?(.*)', fromMe: true}, (async (m, qu) => {
-if (!qu[1]) {return await m.client.sendMessage(m.jid,'_Need some data \n Example: \n .setexif Name|Author_',MessageType.text,{quoted:m.data})}
-await m.client.sendMessage(m.jid, '_Added new exif!_',MessageType.text,{quoted:m.data});
-await he.patch(ur + '/config-vars', { body: {['STICKER_DATA']: qu[1]}});}));
-addCommand({ pattern: 'audinfo ?(.*)', fromMe: true}, (async (m, qu) => {
-if (!qu[1]) {return await m.client.sendMessage(m.jid,'_Need some data like: *.audinfo Title;Artist;Imagelink*_',MessageType.text,{quoted:m.data})}
-await m.client.sendMessage(m.jid, '_Added new audio info!_',MessageType.text,{quoted:m.data});
-await he.patch(ur + '/config-vars', { body: {['AUDIO_DATA']: qu[1]}});}));
-*/
 Module({
     pattern: 'mp4 ?(.*)',
     fromMe: a,
@@ -122,8 +96,12 @@ Module({
         } catch {
             return await m.sendReply("*Failed*")
         }
-        await m.sendReply({
+        await m.client.sendMessage(
+            message.jid,
+            {
+            video: {
             url: result
-        }, 'video');
+            }
+        }, {quoted:message.quoted});
     } else return await m.sendReply('_Reply to an animated sticker!_');
 }));
