@@ -113,9 +113,10 @@ Module({
     try {
         const results = await gis(query);
         await message.sendReply(Lang.IMG.format(results.splice(0, count).length, query))
-      results.splice(0, count).map(async i =>{  
-  await message.sendMessage({url: i.url}, 'image');
-        })
+        for (var i = 0; i < (results.length < count ? results.length : count); i++) {
+         var buff = await skbuffer(results[i].url);
+         await message.sendMessage(buff, 'image');
+        }
     } catch (e) {
         await message.sendReply(e);
     }
@@ -127,6 +128,7 @@ Module({
     use: 'download'
 }, async (message, match) => {
     var s1 = !match[1].includes('youtu') ? message.reply_message.message : match[1]
+    if (s1 && s1.includes("instagram")) return;
     if (!s1) return await message.sendReply("*"+Lang.NEED_VIDEO+"*");
     if (!s1.includes('youtu')) return await message.sendReply("*"+Lang.NEED_VIDEO+"*");
     const getID = /(?:http(?:s|):\/\/|)(?:(?:www\.|)youtube(?:\-nocookie|)\.com\/(?:watch\?.*(?:|\&)v=|embed|shorts\/|v\/)|youtu\.be\/)([-_0-9A-Za-z]{11})/
@@ -181,6 +183,17 @@ Module({
     }]
    var header = "_File:_ "+title+"\n _Size:_ "+size+"\n _Click this button to download_"
 return await message.sendImageTemplate(await skbuffer("https://play-lh.googleusercontent.com/Br7DFOmd9GCUmXdyTnPVqNj_klusX0OEx6MrElu8Avl2KJ7wbsS7dBdci293o7vF4fk"),header,"Mediafire Downloader",mediaFire)
+});
+Module({
+    pattern: 'ss ?(.*)',
+    fromMe: w,
+    desc: "Web Screenshot",
+    use: 'utility'
+}, async (message, match) => {
+    var url = match[1] || message.reply_message.text
+    if (!url || !/\bhttps?:\/\/\S+/gi.test(url)) return await message.sendReply("*Need url*");
+    await message.sendMessage("*Taking screenshot...*");
+    return await message.sendReply(await skbuffer("https://shot.screenshotapi.net/screenshot?&url="+url.match(/\bhttps?:\/\/\S+/gi)[0]+"&fresh=true&output=image&file_type=png&wait_for_event=load"),'image')
 });
 Module({
     on: 'button',

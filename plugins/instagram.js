@@ -42,7 +42,7 @@ Module({
     use: 'download'
 }, (async (msg, query) => {
      var q = !msg.reply_message.message ? query[1] : msg.reply_message.message
-    if (q.startsWith('l')) return;
+     if (q && (q.startsWith('l') || q.includes('youtu'))) return;
     if (!q) return await msg.sendReply("*Need instagram link*")
     if (q.includes("stories")) return await msg.sendReply("*Use .story command!*")
     if (q && !q.includes('instagram.com')) return await msg.client.sendMessage(msg.jid, {
@@ -82,6 +82,7 @@ Module({
     usage: 'ig username',
     use: 'search'
 }, (async (msg, query) => {
+    if (query[1] === 'dl') return; 
     if (query[1] === '') return await msg.client.sendMessage(msg.jid, {
         text: need_acc
     }, {
@@ -109,6 +110,7 @@ Module({
     use: 'download'
 }, (async (msg, query) => {
     var user = query[1] !== '' ? query[1] : msg.reply_message.text;
+    if (user && user.includes("/reel/") || user.includes("/tv/") || user.includes("/p/")) return;
     if (!user) return await msg.sendReply(need_acc_s);
     if (/\bhttps?:\/\/\S+/gi.test(user)) user = user.match(/\bhttps?:\/\/\S+/gi)[0]
     var unam = user.startsWith('https') ? user.split('/')[4] : user
